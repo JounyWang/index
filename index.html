@@ -8,17 +8,16 @@
 	</head>
 	<body>
 		<div id="info">
-			<audio autoplay="autoplay">
-<source src="http://fs.open.kugou.com/d7e8ed783aa14bbd6b4d1011fc832dc2/5d11bdf8/G137/M02/14/15/yQ0DAFuJG16AdOWmADakvoAVLzA467.mp3" type="audio/mpeg">
-</audio>
+			<audio autoplay preload="auto" controls loop id="audio">
+			<source src="music/bgMusic.ogg" type="audio/ogg"/>
+			<source src="http://fs.open.kugou.com/d7e8ed783aa14bbd6b4d1011fc832dc2/5d11bdf8/G137/M02/14/15/yQ0DAFuJG16AdOWmADakvoAVLzA467.mp3" type="audio/mpeg">
+			</audio>
 		</div>
-
 		<script src="js/three.js"></script>
 		<script src="js/AnaglyphEffect.js"></script>
 		<script src="js/WebGL.js"></script>
 
 		<script>
-
 			if ( WEBGL.isWebGLAvailable() === false ) {
 
 				document.body.appendChild( WEBGL.getWebGLErrorMessage() );
