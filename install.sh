@@ -162,7 +162,7 @@ modify_nginx(){
         cp /etc/nginx/nginx.conf.bak /etc/nginx/nginx.conf
     fi
     sed -i "1,/listen/{s/listen 443 ssl;/listen ${port} ssl;/}" ${nginx_conf}
-    sed -i "/server_name/c \\\tserver_name ${domain};" ${nginx_conf}
+    sed -i "/server_name/c \\\tserver_name ${domain} www.${domain};" ${nginx_conf}
     sed -i "/location/c \\\tlocation \/${camouflage}\/" ${nginx_conf}
     sed -i "/proxy_pass/c \\\tproxy_pass http://127.0.0.1:${PORT};" ${nginx_conf}
     sed -i "/return/c \\\treturn 301 https://${domain}\$request_uri;" ${nginx_conf}
@@ -220,7 +220,7 @@ ssl_install(){
 
 }
 domain_check(){
-    stty erase '^H' && read -p "请输入你的域名信息(eg:www.yihu.tk):" domain
+stty erase '^H' && read -p "请输入你的域名信息(eg:yihu.tk):" domain
     domain_ip=`ping ${domain} -c 1 | sed '1{s/[^(]*(//;s/).*//;q}'`
     echo -e "${OK} ${GreenBG} 正在获取 公网ip 信息，请耐心等待 ${Font}"
     local_ip=`curl -4 ip.sb`
