@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<title>Where are you ?</title>
+		<title>Dance with me</title>
 		<link rel="icon" href="favicon.ico" type="image/x-icon" />
 		<link rel="shortcut icon" href="favicon.ico" type="image/x-icon"/>
 		<meta charset="utf-8">
@@ -15,29 +15,23 @@
 			<source src="http://fs.open.kugou.com/d7e8ed783aa14bbd6b4d1011fc832dc2/5d11bdf8/G137/M02/14/15/yQ0DAFuJG16AdOWmADakvoAVLzA467.mp3" type="audio/mpeg">
 			</audio>
 		</div>
-		</div>
-
 		<script src="js/three.js"></script>
-
-		<script src="js/FresnelShader.js"></script>
-
+		<script src="js/AnaglyphEffect.js"></script>
 		<script src="js/WebGL.js"></script>
 
 		<script>
-
 			if ( WEBGL.isWebGLAvailable() === false ) {
 
 				document.body.appendChild( WEBGL.getWebGLErrorMessage() );
 
 			}
 
-			var container;
-
-			var camera, scene, renderer;
+			var container, camera, scene, renderer, effect;
 
 			var spheres = [];
 
-			var mouseX = 0, mouseY = 0;
+			var mouseX = 0;
+			var mouseY = 0;
 
 			var windowHalfX = window.innerWidth / 2;
 			var windowHalfY = window.innerHeight / 2;
@@ -52,47 +46,33 @@
 				container = document.createElement( 'div' );
 				document.body.appendChild( container );
 
-				camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 1, 100000 );
-				camera.position.z = 3200;
-
-				//
+				camera = new THREE.PerspectiveCamera( 60, window.innerWidth / window.innerHeight, 0.01, 100 );
+				camera.position.z = 3;
+				camera.focalLength = 3;
 
 				var path = "other/";
-				var format = '.jpg';
+				var format = '.png';
 				var urls = [
-					path + 'posx' + format, path + 'negx' + format,
-					path + 'posy' + format, path + 'negy' + format,
-					path + 'posz' + format, path + 'negz' + format
+					path + 'px' + format, path + 'nx' + format,
+					path + 'py' + format, path + 'ny' + format,
+					path + 'pz' + format, path + 'nz' + format
 				];
 
 				var textureCube = new THREE.CubeTextureLoader().load( urls );
-				textureCube.format = THREE.RGBFormat;
 
 				scene = new THREE.Scene();
 				scene.background = textureCube;
 
-				//
-
-				var geometry = new THREE.SphereBufferGeometry( 100, 32, 16 );
-
-				var shader = THREE.FresnelShader;
-				var uniforms = THREE.UniformsUtils.clone( shader.uniforms );
-
-				uniforms[ "tCube" ].value = textureCube;
-
-				var material = new THREE.ShaderMaterial( {
-					uniforms: uniforms,
-					vertexShader: shader.vertexShader,
-					fragmentShader: shader.fragmentShader
-				} );
+				var geometry = new THREE.SphereBufferGeometry( 0.1, 32, 16 );
+				var material = new THREE.MeshBasicMaterial( { color: 0xffffff, envMap: textureCube } );
 
 				for ( var i = 0; i < 500; i ++ ) {
 
 					var mesh = new THREE.Mesh( geometry, material );
 
-					mesh.position.x = Math.random() * 10000 - 5000;
-					mesh.position.y = Math.random() * 10000 - 5000;
-					mesh.position.z = Math.random() * 10000 - 5000;
+					mesh.position.x = Math.random() * 10 - 5;
+					mesh.position.y = Math.random() * 10 - 5;
+					mesh.position.z = Math.random() * 10 - 5;
 
 					mesh.scale.x = mesh.scale.y = mesh.scale.z = Math.random() * 3 + 1;
 
@@ -106,8 +86,13 @@
 
 				renderer = new THREE.WebGLRenderer();
 				renderer.setPixelRatio( window.devicePixelRatio );
-				renderer.setSize( window.innerWidth, window.innerHeight );
 				container.appendChild( renderer.domElement );
+
+				var width = window.innerWidth || 2;
+				var height = window.innerHeight || 2;
+
+				effect = new THREE.AnaglyphEffect( renderer );
+				effect.setSize( width, height );
 
 				//
 
@@ -123,14 +108,14 @@
 				camera.aspect = window.innerWidth / window.innerHeight;
 				camera.updateProjectionMatrix();
 
-				renderer.setSize( window.innerWidth, window.innerHeight );
+				effect.setSize( window.innerWidth, window.innerHeight );
 
 			}
 
 			function onDocumentMouseMove( event ) {
 
-				mouseX = ( event.clientX - windowHalfX ) * 10;
-				mouseY = ( event.clientY - windowHalfY ) * 10;
+				mouseX = ( event.clientX - windowHalfX ) / 100;
+				mouseY = ( event.clientY - windowHalfY ) / 100;
 
 			}
 
@@ -157,12 +142,12 @@
 
 					var sphere = spheres[ i ];
 
-					sphere.position.x = 5000 * Math.cos( timer + i );
-					sphere.position.y = 5000 * Math.sin( timer + i * 1.1 );
+					sphere.position.x = 5 * Math.cos( timer + i );
+					sphere.position.y = 5 * Math.sin( timer + i * 1.1 );
 
 				}
 
-				renderer.render( scene, camera );
+				effect.render( scene, camera );
 
 			}
 
